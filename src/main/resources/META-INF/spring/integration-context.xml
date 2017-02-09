@@ -25,7 +25,15 @@
 	<int:channel id="statuses">
 		<int:queue capacity="1"/>
 	</int:channel>
-
+	<!-- pollDataFile获取数据，然后把消息通过transformer转换成jobRequest然后通过jobLaunch启动job，job启动之后chunk会根据commit-interval
+	的数量来决定chunk reader的读取的次数,无论chunk reader读取多少次，chunk writer都只会执行一次，如果这期间抛出异常则整个chunk的事务进行回滚
+	在RSP中batch controller负责chunk reader的读取工作，batch worker负责chunk writer的执行工作，他们之间原本通过jms进行通信，现在改为jdbc的方式进行
+	通信。-->
+	<!-- SI配置的JobExecutionListener会监听job的执行情况，并根据job的执行情况对job做不同的处理（发送email或者重启job或者返回完成的消息） -->
+	<!-- 问题：
+	1.我们替代MQ是为了使用jdbc channel的方式读取数据裤信息来触发job launcher执行job,
+	还是为了实现chunk之间reader和writer的通信工作达到传递业务数据的目的。
+	 -->
 	<int-file:inbound-channel-adapter id="pollDataFile"
 		directory="classpath:/data/paymentImport"
 		channel="databaseOutputChannel">

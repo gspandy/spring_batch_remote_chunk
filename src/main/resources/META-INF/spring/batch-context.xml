@@ -31,7 +31,7 @@
 	<batch:job id="importPayments">
 		<batch:step id="loadPayments">
 			<batch:tasklet>
-				<batch:chunk reader="itemReader" writer="itemWriter" commit-interval="100">
+				<batch:chunk reader="itemReader" writer="itemWriter" commit-interval="1">
 					<batch:listeners>
 						<batch:listener>
 							<bean class="org.springframework.batch.integration.samples.payments.PaymentChunkListener"/>
