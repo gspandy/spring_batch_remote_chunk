@@ -31,10 +31,7 @@
 	<batch:job id="importPayments">
 		<batch:step id="loadPayments">
 			<batch:tasklet>
-				<batch:chunk reader="itemReader" writer="itemWriter" commit-interval="1">
-<!--  					<batch:skippable-exception-classes>
-						<batch:include class="org.springframework.batch.item.file.FlatFileParseException"/>
-					</batch:skippable-exception-classes> -->
+				<batch:chunk reader="itemReader" writer="itemWriter" commit-interval="100">
 					<batch:listeners>
 						<batch:listener>
 							<bean class="org.springframework.batch.integration.samples.payments.PaymentChunkListener"/>
@@ -48,6 +45,22 @@
 		</batch:listeners>
 	</batch:job>
 
+	<bean id="chunkHandler" class="org.springframework.batch.integration.chunk.RemoteChunkHandlerFactoryBean">
+		<property name="chunkWriter" ref="chunkItemWriter" />
+		<property name="step" ref="loadPayments" />
+	</bean>
+
+	<bean id="chunkItemWriter" class="org.springframework.batch.integration.chunk.ChunkMessageChannelItemWriter">
+		<property name="messagingOperations" >
+			<bean class="org.springframework.integration.core.MessagingTemplate">
+				<property name="defaultChannel" ref="chunks"/>
+			</bean>
+		</property>
+		<property name="replyChannel" ref="chunksReplies" />
+		<property name="throttleLimit" value="5" />
+		<property name="maxWaitTimeouts" value="30000" />
+	</bean>
+	
 	<bean id="itemWriter" class="org.springframework.batch.integration.samples.payments.PaymentWriter">
 		<constructor-arg name="dataSource" ref="dataSource"/>
 	</bean>
@@ -68,10 +81,14 @@
 			</bean>
 		</property>
 	</bean>
-
-	<bean id="chunkHandler" class="org.springframework.batch.integration.chunk.RemoteChunkHandlerFactoryBean">
-		<property name="chunkWriter" ref="chunkItemWriter" />
-		<property name="step" ref="loadPayments" />
+	
+	<!-- <bean id="fieldSetMapper"
+	      class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+	    <property name="prototypeBeanName" value="player" />
 	</bean>
+	
+	<bean id="player"
+	      class="org.springframework.batch.sample.domain.Player"
+	      scope="prototype" /> -->
 
 </beans>

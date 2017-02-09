@@ -33,14 +33,7 @@
 		</int:poller>	
 	</int-file:inbound-channel-adapter>
 	
-	<int-file:inbound-channel-adapter id="pollDataFile1"
-		directory="classpath:/data/paymentImport"
-		channel="databaseOutputChannel">
-		<int:poller fixed-rate="2000" max-messages-per-poll="1" task-executor="poor">
-		</int:poller>	
-	</int-file:inbound-channel-adapter>
-	
-	<task:executor id="poor" keep-alive="120" queue-capacity="1" pool-size="1"/>
+	<task:executor id="poor" keep-alive="120" queue-capacity="10" pool-size="10"/>
 
 	<int:transformer id="prepareJobLaunchRequest"
 		input-channel="databaseOutputChannel" output-channel="requests">
@@ -113,16 +106,5 @@
 	</int:channel>
 
 	<int:service-activator input-channel="chunks" output-channel="chunksReplies" ref="chunkHandler" />
-
-	<bean id="chunkItemWriter" class="org.springframework.batch.integration.chunk.ChunkMessageChannelItemWriter">
-		<property name="messagingOperations" >
-			<bean class="org.springframework.integration.core.MessagingTemplate">
-				<property name="defaultChannel" ref="chunks"/>
-			</bean>
-		</property>
-		<property name="replyChannel" ref="chunksReplies" />
-		<property name="throttleLimit" value="5" />
-		<property name="maxWaitTimeouts" value="30000" />
-	</bean>
 
 </beans>

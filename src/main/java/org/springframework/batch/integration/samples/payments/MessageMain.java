@@ -79,7 +79,7 @@ public final class MessageMain {
 		final ExitStatus exitStatus = jobExecution.getExitStatus();
 		final int count = jdbcTemplate.queryForObject("select count(*) from payments", Integer.class);
 
-		System.out.println(String.format("\nDONE!!\nexitStatus: %s; # of payments imported: %s",
+		System.out.println(String.format("\nDONE!!\nexitStatus: %s; %s of payments imported!",
 				exitStatus.getExitCode(), count));
 
 		final StubJavaMailSender mailSender = context.getBean(StubJavaMailSender.class);

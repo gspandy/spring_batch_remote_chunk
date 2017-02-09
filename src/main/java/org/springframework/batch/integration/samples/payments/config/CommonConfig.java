@@ -15,15 +15,8 @@
  */
 package org.springframework.batch.integration.samples.payments.config;
 
-import javax.sql.DataSource;
-
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
  * @author Gunnar Hillert
@@ -32,26 +25,5 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Configuration
 @EnableBatchProcessing
 public class CommonConfig {
-
-	@Bean
-	public JdbcTemplate jdbcTemplate() {
-		return new JdbcTemplate(dataSource());
-	}
-
-	@Bean
-	public DataSource dataSource() {
-		final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-		dataSource.setUrl("jdbc:mysql://localhost/test");
-		dataSource.setUsername("root");
-		dataSource.setPassword("zm19871221");
-		return dataSource;
-//		final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-//		builder.setType(EmbeddedDatabaseType.HSQL)
-//			.addScript("classpath:/org/springframework/batch/core/schema-drop-hsqldb.sql")
-//			.addScript("classpath:/org/springframework/batch/core/schema-hsqldb.sql")
-//			.addScript("classpath:database/dbinit.sql");
-//		return builder.build();
-	}
 
 }
